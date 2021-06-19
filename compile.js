@@ -6,7 +6,8 @@ const solc = require('solc');
 //const fileNameToCompile = 'ValidReceiver';
 //const tokMngrPath = path.resolve(__dirname, 'test', fileNameToCompile + '.sol');
 
-const fileNameToCompile = 'TokenManager';
+//const fileNameToCompile = 'TokenManager';
+const fileNameToCompile = process.argv[2];
 const tokMngrPath = path.resolve(__dirname, 'contracts', fileNameToCompile + '.sol');
 
 console.log("File Path: " + tokMngrPath);
@@ -41,13 +42,20 @@ function findImports(path) {
 let output = JSON.parse(solc.compile(JSON.stringify(input), {import: findImports}));
 
 //Writing compiled file
-let compiledFile = JSON.stringify(output.contracts["sourceFile"][fileNameToCompile]);
-fs.writeFile("compiled/"+fileNameToCompile+".json", compiledFile, (err) => {
-  if (err)
-    console.log(err);
-  else {
-    console.log("ABI File written successfully\n");
-    console.log("The written has the following contents:");
-    console.log(fs.readFileSync("compiled/"+fileNameToCompile+".json", "utf8"));
-  }
-});
+if(output.contracts == undefined){
+  console.log("========ERRORS========");
+  console.log("_________OUTPUT___________");
+  console.log(output);
+  console.log("_______________________");
+}else{
+  let compiledFile = JSON.stringify(output.contracts["sourceFile"][fileNameToCompile]);
+  fs.writeFile("compiled/"+fileNameToCompile+".json", compiledFile, (err) => {
+    if (err)
+      console.log(err);
+    else {
+      console.log("ABI File written successfully\n");
+      //console.log("The written has the following contents:");
+      //console.log(fs.readFileSync("compiled/"+fileNameToCompile+".json", "utf8"));
+    }
+  });
+}

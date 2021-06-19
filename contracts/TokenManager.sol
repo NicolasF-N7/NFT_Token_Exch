@@ -155,7 +155,7 @@ contract TokenManager is ERC721, CheckerERC165{
   /*
   Same comments as transferFrom for public and not payable.
   Check if _to is a valid ERC721 receiver contract.
-  HERE added "memory" to data location
+  HERE added "calldata" to data location
   */
   function safeTransferFrom(address _from, address _to, uint256 _tokenId, bytes memory data) public override {
     transferFrom(_from, _to, _tokenId);
