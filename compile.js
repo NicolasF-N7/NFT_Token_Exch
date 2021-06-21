@@ -49,6 +49,7 @@ if(output.contracts == undefined){
   console.log("_______________________");
 }else{
   let compiledFile = JSON.stringify(output.contracts["sourceFile"][fileNameToCompile]);
+  console.log("output: " + JSON.stringify(output.contracts["sourceFile"]));
   fs.writeFile("compiled/"+fileNameToCompile+".json", compiledFile, (err) => {
     if (err)
       console.log(err);

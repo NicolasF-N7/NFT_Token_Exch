@@ -64,8 +64,9 @@ contract TokenManager is ERC721, CheckerERC165{
   /*
   Mint a token
   Associate metadata to it (Comming feature)
+  Marked as virtual because enumerable override this function.
   */
-  function mintToken() public{
+  function mintToken() external virtual{
     //increment the number of token owned by the caller of mintToken
     balances[msg.sender] = balances[msg.sender].add(1);
 
@@ -81,8 +82,9 @@ contract TokenManager is ERC721, CheckerERC165{
 
   /*
   Burn - Destroy a token. It will no longer be attached to his metadata, and not transferable anymore.
+  Marked as virtual because enumerable override this function.
   */
-  function burnToken(uint256 _tokenId) public{
+  function burnToken(uint256 _tokenId) external virtual {
     address owner = ownerOf(_tokenId);
     require(owner == msg.sender || allowance[_tokenId] == msg.sender
         || authorised[owner][msg.sender]);
@@ -133,8 +135,9 @@ contract TokenManager is ERC721, CheckerERC165{
   /*
   Changed to not payable because the commission is taken from the amount transfered from the buyer to the owner.
   public because will be reused in this contract
+  Marked as virtual because enumerable override this function.
   */
-  function transferFrom(address _from, address _to, uint256 _tokenId) public override {
+  function transferFrom(address _from, address _to, uint256 _tokenId) public virtual override {
     address owner = ownerOf(_tokenId);
 
     //Check requirements

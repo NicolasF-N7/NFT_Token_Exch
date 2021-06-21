@@ -5,7 +5,7 @@ const Web3 = require('web3');
 const provider = new Web3.providers.HttpProvider("http://localhost:8545");
 const web3 = new Web3(provider);
 
-let compiledFilePath = './compiled/TokenManagerMetadata.json';
+let compiledFilePath = './compiled/TokenManagerEnumerable.json';
 let compiledToken = require(compiledFilePath);
 let contractABI = compiledToken['abi'];
 
@@ -16,15 +16,22 @@ promise.then(function(response) {
   accounts = response;
 });
 
-const toknMngrMetadata = new web3.eth.Contract(contractABI, "0x1af94a29d48b9f353147ceb0537f39af596006eb");
-//Display the symbol from metadata
-tokMngrMetadata.methods.symbol().call().then(console.log);
+let toknMngrMetadata = new web3.eth.Contract(contractABI, "0x2da210d7403635d7ee5106a02ed0b37bba112b18");
+//===Basic functions===
 //acc0 mint a token
 let rt = toknMngrMetadata.methods.mintToken().send({from: accounts[0], gas: 3000000, gasPrice: '30000000000'});
+
+//===Metadata functions===
+//Display the symbol from metadata
+tokMngrMetadata.methods.symbol().call().then(console.log);
 //print the tokenURI of the new token (ID=1)
 //.call because view function i.e. doesn't modify the contract state
 toknMngrMetadata.methods.tokenURI(1).call().then(console.log);
 
+//===Enumerable functions===
+toknMngrMetadata.methods.totalSupply().call().then(console.log);
+toknMngrMetadata.methods.tokenByIndex(0).call().then(console.log);
+toknMngrMetadata.methods.tokenOfOwnerByIndex(accounts[0],1).call().then(console.log);
 
 //Set up event listener... Not working
 let evEmitter = toknMngrMetadata.events.Transfer().on('data',(event) =>{

@@ -4,12 +4,13 @@ import "standard/ERC721Enumerable.sol";
 import "contracts/TokenManager.sol";
 
 contract TokenManagerEnumerable is TokenManager, ERC721Enumerable {
+  using SafeMath for uint256;
   uint[] internal tokenIndexes; // The list of all tokens created
   mapping(uint => uint) internal indexTokens;//From an index (in tokenIndexes array) gives the tokenID associated. i.e. it is tokenIndexes reversed access
   mapping(address => uint[]) internal ownerTokenIndexes;// Gives from an address the list of all the tokenId owned by it.
   mapping(uint => uint) internal tokenTokenIndexes;//From a tokenId, it gives the index of that token within the list of the owner's tokens.
 
-  constructor() public TokenManager(){
+  constructor() TokenManager(){
     supportedInterfaces[
         this.totalSupply.selector ^
         this.tokenByIndex.selector ^
@@ -17,17 +18,17 @@ contract TokenManagerEnumerable is TokenManager, ERC721Enumerable {
     ] = true;
   }
 
-  function totalSupply() external view returns (uint256){
+  function totalSupply() external view override returns (uint256){
     return tokenIndexes.length;
   }
 
-  function tokenByIndex(uint256 _index) external view returns (uint256){
-    requires(_index < tokenIndexes.length);
+  function tokenByIndex(uint256 _index) external view override returns (uint256){
+    require(_index < tokenIndexes.length);
     return tokenIndexes[_index];
   }
 
-  function tokenOfOwnerByIndex(address _owner, uint256 _index) external view returns (uint256){
-    requires(_index < balances[_owner]);
+  function tokenOfOwnerByIndex(address _owner, uint256 _index) external view override returns (uint256){
+    require(_index < balances[_owner]);
     return ownerTokenIndexes[_owner][_index];
   }
 
@@ -51,7 +52,7 @@ contract TokenManagerEnumerable is TokenManager, ERC721Enumerable {
     //================Enumerable================
     //removing token in _from tokens list
     uint fromTokenIndex = tokenTokenIndexes[_tokenId];
-    uint fromBalance = balance[_from];//Already decreased by one previously
+    uint fromBalance = balances[_from];//Already decreased by one previously
     if(fromTokenIndex != fromBalance){//we have to do more than just decreasing the array length
       uint256 fromLastTokenId = ownerTokenIndexes[_from][fromBalance];
       ownerTokenIndexes[_from][fromTokenIndex] = fromLastTokenId;//If errors, Look here, the second index
@@ -60,16 +61,16 @@ contract TokenManagerEnumerable is TokenManager, ERC721Enumerable {
       tokenTokenIndexes[fromLastTokenId] = fromTokenIndex;
     }
 
-    ownerTokenIndexes[_from].length--;
+    ownerTokenIndexes[_from].pop();
 
     //Add the token to _to list of token
     ownerTokenIndexes[_to].push(_tokenId);
 
     //update tokenTokenIndexes[_tokenId], to the new index of the tokenId within the list of tokens of _to
-    tokenToken[_tokenId] = balance[_to] - 1;
+    tokenTokenIndexes[_tokenId] = balances[_to] - 1;
   }
 
-  function burnToken(uint256 _tokenId) public{
+  function burnToken(uint256 _tokenId) public override{
     address owner = ownerOf(_tokenId);
     require(owner == msg.sender || allowance[_tokenId] == msg.sender
         || authorised[owner][msg.sender]);
@@ -81,17 +82,17 @@ contract TokenManagerEnumerable is TokenManager, ERC721Enumerable {
 
     //=====Enumerable=====
     uint fromTokenIndex = tokenTokenIndexes[_tokenId];
-    uint fromBalance = balance[_from];//Already decreased by one previously
+    uint fromBalance = balances[owner];//Already decreased by one previously
     if(fromTokenIndex != fromBalance){//we have to do more than just decreasing the array length
-      uint256 fromLastTokenId = ownerTokenIndexes[_from][fromBalance];
-      ownerTokenIndexes[_from][fromTokenIndex] = fromLastTokenId;//If errors, Look here, the second index
+      uint256 fromLastTokenId = ownerTokenIndexes[owner][fromBalance];
+      ownerTokenIndexes[owner][fromTokenIndex] = fromLastTokenId;//If errors, Look here, the second index
 
-      //update the index of the token we just moved within the list of _from's tokens
+      //update the index of the token we just moved within the list of owner's tokens
       tokenTokenIndexes[fromLastTokenId] = fromTokenIndex;
     }
 
-    ownerTokenIndexes[_from].length--;
-    delete tokenToken[_tokenId];
+    ownerTokenIndexes[owner].pop();
+    delete tokenTokenIndexes[_tokenId];
 
     //Dealing with tokenIndexes
     uint oldIndex = indexTokens[_tokenId];
@@ -99,10 +100,11 @@ contract TokenManagerEnumerable is TokenManager, ERC721Enumerable {
     if(oldIndex != totalTokenCount - 1){
       tokenIndexes[oldIndex] = tokenIndexes[totalTokenCount-1];
     }
-    tokenIndexes.length--;
+    tokenIndexes.pop();
   }
 
-  function mintToken() public{
+  //Function passed from 90k gas to 180k gas by adding the enumerable extension
+  function mintToken() public override{
     //increment the number of token owned by the caller of mintToken
     balances[msg.sender] = balances[msg.sender].add(1);
     //The tokenId of the token currently being created is maxId after this operation. i.e. first token ID is 1
