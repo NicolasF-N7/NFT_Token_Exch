@@ -6,7 +6,6 @@ const solc = require('solc');
 //const fileNameToCompile = 'ValidReceiver';
 //const tokMngrPath = path.resolve(__dirname, 'test', fileNameToCompile + '.sol');
 
-
 //const fileNameToCompile = 'TokenManager';
 const fileNameToCompile = process.argv[2];
 const tokMngrPath = path.resolve(__dirname, 'contracts', fileNameToCompile + '.sol');
