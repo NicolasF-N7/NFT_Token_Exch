@@ -24,7 +24,7 @@ promise.then(function(response) {
   //For TokenManagerMetadata add the patams
   new web3.eth.Contract(contractABI).deploy({
           data: contractByteCode,
-          arguments: [/*"Nexchange", "Nexchange symbol", "http://localhost/nexchange/tokens/"*/]
+          arguments: ["Nexchange", "Nexchange symbol", "http://localhost/nexchange/tokens/"]
       }).send({from: accounts[0], gas: 3000000, gasPrice: '30000000000'}).then(function(res){
           contract = res;
           contract.setProvider(provider);

@@ -1,3 +1,6 @@
+//=================================
+//A LANCER DANS LE DOSSIER CONTRACTS
+//=================================
 const path = require('path');
 const fs = require('fs');
 const solc = require('solc');
@@ -34,7 +37,7 @@ let input = {
 
 function findImports(path) {
   //path = 'contracts/' + path
-    console.log("findImports Importing: " + path);
+    console.log("Importing: " + path);
     return {'contents': fs.readFileSync(path).toString()}
 }
 
@@ -49,12 +52,13 @@ if(output.contracts == undefined){
   console.log("_______________________");
 }else{
   let compiledFile = JSON.stringify(output.contracts["sourceFile"][fileNameToCompile]['abi']);
-  console.log("output: " + JSON.stringify(output.contracts["sourceFile"]));
-  fs.writeFile("compiled/"+fileNameToCompile+"_ABI.json", compiledFile, (err) => {
+  //console.log("output: " + JSON.stringify(output.contracts["sourceFile"]));
+  let compiledFileName = "../compiled/"+fileNameToCompile+"_ABI.json";
+  fs.writeFile(compiledFileName, compiledFile, (err) => {
     if (err)
       console.log(err);
     else {
-      console.log("ABI File written successfully\n");
+      console.log("ABI File successfully written to " + compiledFileName + "\n");
       //console.log("The written has the following contents:");
       //console.log(fs.readFileSync("compiled/"+fileNameToCompile+".json", "utf8"));
     }

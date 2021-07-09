@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 pragma solidity ^0.8.4;
-import "contracts/CheckerERC165.sol";//Path from root dir of the project
-import "standard/ERC721.sol";
-import "standard/ERC721TokenReceiver.sol";
-import "libraries/SafeMath8.sol";
+import "./CheckerERC165.sol";//Path from root dir of the project
+import "./standard/ERC721.sol";
+import "./standard/ERC721TokenReceiver.sol";
+import "./libraries/SafeMath8.sol";
 
 contract TokenManager is ERC721, CheckerERC165{
   using SafeMath for uint256;

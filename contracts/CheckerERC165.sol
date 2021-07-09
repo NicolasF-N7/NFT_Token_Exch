@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 pragma solidity ^0.8.4;
-import "../standard/ERC721.sol";
+import "./standard/ERC721.sol";
 
 contract CheckerERC165 is ERC165 {
   mapping (bytes4 => bool) internal supportedInterfaces;

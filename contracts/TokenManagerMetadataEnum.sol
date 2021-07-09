@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 pragma solidity ^0.8.4;
-import "standard/ERC721Metadata.sol";
-import "contracts/TokenManagerEnumerable.sol";
+import "./standard/ERC721Metadata.sol";
+import "./TokenManagerEnumerable.sol";
 
 contract TokenManagerMetadataEnum is TokenManagerEnumerable, ERC721Metadata{
   string private __name;
