@@ -41,7 +41,7 @@ promise.then(function(response) {
   console.log("=Selector= safeTransferFrom: " + web3.eth.abi.encodeFunctionSignature("safeTransferFrom(address,address,uint256)"));
   console.log("=Selector= balanceOf: " + web3.eth.abi.encodeFunctionSignature("balanceOf(address)"));
 
-  //Set up event listener... Not working
+  // Set up event listener... Not working
   /*let evEmitter = toknMngrMetadata.events.Transfer().on('data',(event) =>{
     console.log("An event happened ! : " + event);
   }).on('error', (err) => {
