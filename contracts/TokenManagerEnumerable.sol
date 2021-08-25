@@ -111,6 +111,8 @@ contract TokenManagerEnumerable is TokenManager, ERC721Enumerable {
     maxId = maxId.add(1);
     //Set the ownership
     owners[maxId] = msg.sender;
+    proposalValue[maxId] = 0;
+    proposalInitiator[maxId] = address(0);
     //Signal that a token has been created
     emit Transfer(address(0), msg.sender, maxId);
 
@@ -119,7 +121,6 @@ contract TokenManagerEnumerable is TokenManager, ERC721Enumerable {
     indexTokens[maxId] = tokenIndexes.length-1;
     ownerTokenIndexes[msg.sender].push(maxId);
     tokenTokenIndexes[maxId] = ownerTokenIndexes[msg.sender].length-1;
-
   }
 
 }

@@ -15,11 +15,14 @@ let promise = web3.eth.getAccounts();
 promise.then(function(response) {
   accounts = response;
 }).then(function(res){
-  let toknMngrMetadata = new web3.eth.Contract(contractABI, "0x7a3E9316D67DAF4E0b5c0a3Bf8A24e9A4B7A7eeF");
+  let toknMngrMetadata = new web3.eth.Contract(contractABI, "0x9B22cA98481021d4eE46C7DA5C4977D8848f517f");
   //===Basic functions===
   //acc0 mint a token
   let rt = toknMngrMetadata.methods.mintToken().send({from: accounts[0], gas: 3000000, gasPrice: '30000000000'});
-
+  rt.then((res) => {
+    console.log("Minted token ID = " + JSON.stringify(res));
+    //console.log("Minted token ID = " + res.events.Transfer.returnValues._tokenId);
+  });
   //===Metadata functions===
   //Display the symbol from metadata
   toknMngrMetadata.methods.symbol().call().then(console.log);
@@ -31,6 +34,13 @@ promise.then(function(response) {
   toknMngrMetadata.methods.totalSupply().call().then(console.log);
   toknMngrMetadata.methods.tokenByIndex(0).call().then(console.log);
   toknMngrMetadata.methods.tokenOfOwnerByIndex(accounts[0],0).call().then(console.log);
+
+  rt = toknMngrMetadata.methods.createProposal(1).send({from: accounts[1], gas: 3000000, gasPrice: '30000000000', value: "4000000000000000000"});
+  rt = toknMngrMetadata.methods.getProposal(1).call().then(console.log);
+  rt = toknMngrMetadata.methods.acceptProposal(true, 1).send({from: accounts[0], gas: 3000000, gasPrice: '30000000000'}).then(console.log).catch(console.error);
+  toknMngrMetadata.methods.balanceOf(accounts[0]).call().then(console.log).catch(console.error);
+
+  web3.eth.getBalance(accounts[1], console.log);
 
   console.log("=Selector= Mint: " + web3.eth.abi.encodeFunctionSignature("mintToken()"));
   console.log("=Selector= totalSupply: " + web3.eth.abi.encodeFunctionSignature("totalSupply()"));

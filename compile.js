@@ -51,14 +51,14 @@ if(output.contracts == undefined){
   console.log(output);
   console.log("_______________________");
 }else{
-  let compiledFile = JSON.stringify(output.contracts["sourceFile"][fileNameToCompile]['abi']);
+  let compiledFile = JSON.stringify(output.contracts["sourceFile"][fileNameToCompile]);
   //console.log("output: " + JSON.stringify(output.contracts["sourceFile"]));
-  let compiledFileName = "../compiled/"+fileNameToCompile+"_ABI.json";
+  let compiledFileName = "../compiled/"+fileNameToCompile+".json";
   fs.writeFile(compiledFileName, compiledFile, (err) => {
     if (err)
       console.log(err);
     else {
-      console.log("ABI File successfully written to " + compiledFileName + "\n");
+      console.log("ABI+Bytecode File successfully written to " + compiledFileName + "\n");
       //console.log("The written has the following contents:");
       //console.log(fs.readFileSync("compiled/"+fileNameToCompile+".json", "utf8"));
     }

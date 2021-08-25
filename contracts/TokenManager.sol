@@ -29,6 +29,11 @@ contract TokenManager is ERC721, CheckerERC165{
   // A nested mapping for managing "operators". Authorize sb to control all the token of another address.
   mapping (address => mapping (address => bool)) internal authorised;
 
+  //Mapping associating tokenID with the proposal Value
+  mapping (uint256 => uint256) internal proposalValue;
+  //Mapping associating tokenID with the address of the initiator of the proposal
+  mapping (uint256 => address) internal proposalInitiator;
+
   constructor() CheckerERC165(){
     creator = msg.sender;
     maxId = 0x0;
@@ -75,6 +80,10 @@ contract TokenManager is ERC721, CheckerERC165{
 
     //Set the ownership
     owners[maxId] = msg.sender;
+
+    //Init proposal to 0
+    proposalValue[maxId] = 0;
+    proposalInitiator[maxId] = address(0);
 
     //Signal that a token has been created
     emit Transfer(address(0), msg.sender, maxId);
@@ -177,6 +186,42 @@ contract TokenManager is ERC721, CheckerERC165{
 
   function safeTransferFrom(address _from, address _to, uint256 _tokenId) public override {
     safeTransferFrom(_from, _to, _tokenId, "");
+  }
+
+  /*
+    Create a proposal
+  */
+  function createProposal(uint256 _tokenId) external payable{
+    require(isValidToken(_tokenId));
+    address initiator = msg.sender;
+    address owner = ownerOf(_tokenId);
+    require(initiator != owner);//Proposal to oneself not authorised
+    uint256 value = msg.value;
+    proposalInitiator[_tokenId] = initiator;
+    proposalValue[_tokenId] = value;
+  }
+
+  function getProposal(uint256 _tokenId) external view returns (uint256){
+    require(isValidToken(_tokenId));
+    return proposalValue[_tokenId];
+  }
+
+  function acceptProposal(bool _accept, uint256 _tokenId) external{
+    address initiator = proposalInitiator[_tokenId];
+    address owner = ownerOf(_tokenId);
+    address sender = msg.sender;
+    require(owner == sender);
+    uint256 val = proposalValue[_tokenId];
+
+    if(_accept){
+      safeTransferFrom(owner, initiator, _tokenId);
+      owner.call{value: val}("");
+    }else{//refund if proposal refused
+      initiator.call{value: val}("");
+    }
+
+    proposalValue[_tokenId] = 0;
+    proposalInitiator[_tokenId] = address(0);
   }
 
 }
